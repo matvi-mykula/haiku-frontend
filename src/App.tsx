@@ -15,8 +15,11 @@ import {
   ColorSchemeProvider,
   Box,
   Footer,
+  Flex,
 } from '@mantine/core';
 import { DailyFrontPage } from './FrontPage';
+import { MyContent } from './MyContent';
+import { MyNav } from './MyNav';
 
 const MyAppShell = () => {
   const [opened, setOpened] = useState(false);
@@ -24,7 +27,11 @@ const MyAppShell = () => {
   const toggleColorScheme = (value?: ColorScheme) =>
     setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
 
-  const [content, setContent] = useState('home');
+  const [content, setContent] = useState('pop');
+  const [loaded, setLoaded] = useState(false);
+  const [color, setColor] = useState('rgb(70,70,70)');
+  console.log({ color });
+
   // console.log({ content });
   return (
     <ColorSchemeProvider
@@ -86,19 +93,19 @@ const MyAppShell = () => {
           // }
           header={
             <Header
-              height={{ base: 50, md: 70 }}
+              height={90}
               p="md"
             >
-              <Box
-                style={{
-                  maxWidth: '90vw',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  width: '100vw',
-                }}
+              <Flex
+                mih={50}
+                // bg="rgba(0, 0, 0, .3)"
+                gap="lg"
+                // justify="center"
+                align="center"
+                direction="row"
+                wrap="nowrap"
               >
-                <MediaQuery
+                {/* <MediaQuery
                   largerThan="sm"
                   styles={{ display: 'none' }}
                 >
@@ -108,30 +115,50 @@ const MyAppShell = () => {
                     size="sm"
                     mr="xl"
                   />
-                </MediaQuery>
+                </MediaQuery> */}
                 <Text
                   fw={700}
-                  style={{ fontSize: 'calc(15px + 0.390625vw)' }}
+                  style={{
+                    fontSize: 'calc(20px + 0.390625vw)',
+                    alignSelf: 'center',
+                    justifySelf: 'center',
+                    marginLeft: 'auto',
+                  }}
                 >
-                  Haiku better than News
+                  Collective Subconcious News
                 </Text>
-                <Box>
+                <Box style={{ marginLeft: 'auto' }}>
                   <ThemeSwitcher></ThemeSwitcher>
                 </Box>
-              </Box>
+              </Flex>
             </Header>
           }
           footer={
             <Footer
               height={60}
               p="md"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '100vh',
+              }}
             >
-              There will be nav buttons here
+              <MyNav
+                setContent={setContent}
+                setLoaded={setLoaded}
+              ></MyNav>{' '}
             </Footer>
           }
         >
-          <DailyFrontPage></DailyFrontPage>
-          {/* <MyContent content={content}></MyContent> */}
+          {/* <DailyFrontPage ></DailyFrontPage> */}
+          <Box>
+            <MyContent
+              color={color}
+              content={content}
+              setColor={setColor}
+            ></MyContent>
+          </Box>
         </AppShell>
       </MantineProvider>
     </ColorSchemeProvider>

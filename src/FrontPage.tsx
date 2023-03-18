@@ -1,37 +1,51 @@
-import { Box, Button, Text } from '@mantine/core';
+import { Box, Button, Flex, Text, Loader } from '@mantine/core';
 import axios, { AxiosResponse } from 'axios';
 import { useEffect, useState } from 'react';
 // import { syllable } from 'syllable';
-import { makeHaiku } from './makeHaiku';
+import { makeHaiku, getSent } from './makeHaikuReactive';
+import { getColor } from './getColor';
 
-const DailyFrontPage = () => {
-  const url = 'https://reddit.com/';
+interface Props {
+  url: string;
+  setColor: Function;
+  color: string;
+}
+
+const DailyFrontPage: React.FC<Props> = ({ url, setColor, color }) => {
+  // console.log(url['url']);
+  // const url = 'https://reddit.com/';
+  console.log({ color });
 
   const [haiku, setHaiku] = useState(['']);
   const [topWords, setTopWords] = useState(['']);
-  const [loading, setLoading] = useState(true);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    axios.get('https://www.reddit.com/r/popular/top.json').then((response) => {
-      const postsData = response.data.data.children.map((post: any) => {
-        return post.data.title;
-      });
-      const topTwenty = wordCount(postsData);
-      setTopWords(topTwenty);
-      console.log(topWords);
-    });
-  }, []);
+    axios
+      .get(url)
+      .then((response) => {
+        const postsData = response.data.data.children.map((post: any) => {
+          return post.data.title;
+        });
+        console.log('axios');
+        setTopWords(postsData);
+        console.log(topWords);
+        const haikuLocal = makeHaiku(postsData);
+        setHaiku(haikuLocal);
+        setColor(getColor(getSent(haiku.join(' '))));
 
-  //   useEffect(() => {
-  //     if (topWords.length > 1) {
-  //       console.log({ topWords });
-  //       setHaiku(makeHaiku(topWords));
-  //     }
-  //   }, [topWords]);
+        setLoaded(true);
+      })
+      .catch((err: Error) => {
+        console.log(err);
+      });
+    //   const topTwenty = wordCount(postsData);
+  }, [url]);
 
   return (
     <Box
       style={{
+        backgroundColor: color,
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
@@ -39,85 +53,104 @@ const DailyFrontPage = () => {
         minHeight: '80vh',
       }}
     >
-      {haiku.map((str, index) => (
-        <Text
+      {loaded ? (
+        haiku.map((str, index) => (
+          <Text
+            size="xl"
+            style={{
+              textAlign: 'center',
+            }}
+            key={index}
+          >
+            {str}
+          </Text>
+        ))
+      ) : (
+        <Loader
           size="xl"
-          style={{}}
-          key={index}
-        >
-          {str}
-        </Text>
-      ))}
+          style={{ margin: 'auto' }}
+        />
+      )}
+
       <br></br>
-      <Box>
+      <Flex
+        style={{ height: '200px' }}
+        justify="center"
+        align="end"
+      >
         <Button
+          style={{
+            position: 'absolute',
+          }}
           onClick={() => {
-            setHaiku(makeHaiku(topWords));
+            const haiku = makeHaiku(topWords);
+            setHaiku(haiku);
+            setColor(getColor(getSent(haiku.join(' '))));
           }}
         >
           Next
         </Button>
-      </Box>
+      </Flex>
     </Box>
   );
 };
 
 export { DailyFrontPage };
 
-/////// takes in array of titles , removes stopwords and counts most used words
-/////  returns array of most used words to be made into haikus
-/////////// how to allow for better haikus   //////////////
+// /////// takes in array of titles , removes stopwords and counts most used words
+// /////  returns array of most used words to be made into haikus
+// /////////// how to allow for better haikus   //////////////
 
-/// add proper nouns and allow for some stopwords
-function wordCount(titleArray: string[]) {
-  console.log({ titleArray });
-  const properWordCountMap = new Map();
-  let topProper: string[] = [];
-  const wordCountMap = new Map();
-  const stopWordCountMap = new Map();
-  let topWords: string[] = [];
-  titleArray.forEach((title) => {
-    const words = title.split(' ');
-    const cleanWords = words.map((word) => word.replace(/[^a-zA-Z]/g, ''));
+// /// add proper nouns and allow for some stopwords
+// function wordCount(titleArray: string[]) {
+//   console.log({ titleArray });
+//   const properWordCountMap = new Map();
+//   let topProper: string[] = [];
+//   const wordCountMap = new Map();
+//   const stopWordCountMap = new Map();
+//   let topWords: string[] = [];
+//   titleArray.forEach((title) => {
+//     const words = title.split(' ');
+//     const cleanWords = words.map((word) => word.replace(/[^a-zA-Z]/g, ''));
 
-    cleanWords.forEach((word) => {
-      if (!stopwords.includes(word.toLowerCase()) && /^[A-Z]/.test(word)) {
-        // const count = properWordCountMap.get(word) || 0;
-        // properWordCountMap.set(word, count + 1);
-        topProper.push(word);
-      }
-      if (!stopwords.includes(word) && !/[^a-zA-Z]/.test(word.toLowerCase())) {
-        const count = wordCountMap.get(word) || 0;
-        wordCountMap.set(word, count + 1);
-      }
-      // get some stopwords
-      if (stopwords.includes(word)) {
-        const count = stopWordCountMap.get(word) || 0;
-        stopWordCountMap.set(word, count + 1);
-      }
-    });
-  });
+//     cleanWords.forEach((word) => {
+//       if (!stopwords.includes(word.toLowerCase()) && /^[A-Z]/.test(word)) {
+//         // const count = properWordCountMap.get(word) || 0;
+//         // properWordCountMap.set(word, count + 1);
+//         topProper.push(word);
+//       }
+//       if (!stopwords.includes(word) && !/[^a-zA-Z]/.test(word.toLowerCase())) {
+//         const count = wordCountMap.get(word) || 0;
+//         wordCountMap.set(word, count + 1);
+//       }
+//       // get some stopwords
+//       if (stopwords.includes(word)) {
+//         const count = stopWordCountMap.get(word) || 0;
+//         stopWordCountMap.set(word, count + 1);
+//       }
+//     });
+//   });
 
-  //   const topProper = [...properWordCountMap.entries()]
-  //     .sort((a, b) => b[1] - a[1])
-  //     .slice(0, 20)
-  //     .map((entry) => entry[0]);
-  const topNormWords = [...wordCountMap.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 20)
-    .map((entry) => entry[0]);
-  const topStopWords = [...stopWordCountMap.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 20)
-    .map((entry) => entry[0]);
-  //   console.log({ topProper });
-  //   console.log({ topNormWords });
-  //   console.log({ topStopWords });
+//   //   const topProper = [...properWordCountMap.entries()]
+//   //     .sort((a, b) => b[1] - a[1])
+//   //     .slice(0, 20)
+//   //     .map((entry) => entry[0]);
+//   const topNormWords = [...wordCountMap.entries()]
+//     .sort((a, b) => b[1] - a[1])
+//     .slice(0, 20)
+//     .map((entry) => entry[0]);
+//   const topStopWords = [...stopWordCountMap.entries()]
+//     .sort((a, b) => b[1] - a[1])
+//     .slice(0, 20)
+//     .map((entry) => entry[0]);
+//   //   console.log({ topProper });
+//   //   console.log({ topNormWords });
+//   //   console.log({ topStopWords });
 
-  topWords = topProper.concat(topNormWords, topStopWords);
+//   topWords = topProper.concat(topNormWords, topStopWords);
 
-  return topWords;
-}
+//   return topWords;
+// }
 
 ///------------- original ------------ ////////
 // function wordCount(titleArray: string[]) {
