@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 // import { syllable } from 'syllable';
 import { makeHaiku, getSent } from './makeHaikuReactive';
 import { getColor } from './getColor';
+import './App.css';
 
 interface Props {
   url: string;
@@ -14,7 +15,6 @@ interface Props {
 const DailyFrontPage: React.FC<Props> = ({ url, setColor, color }) => {
   // console.log(url['url']);
   // const url = 'https://reddit.com/';
-  console.log({ color });
 
   const [haiku, setHaiku] = useState(['']);
   const [topWords, setTopWords] = useState(['']);
@@ -29,7 +29,6 @@ const DailyFrontPage: React.FC<Props> = ({ url, setColor, color }) => {
         });
         console.log('axios');
         setTopWords(postsData);
-        console.log(topWords);
         const haikuLocal = makeHaiku(postsData);
         setHaiku(haikuLocal);
         setColor(getColor(getSent(haiku.join(' '))));
@@ -46,11 +45,15 @@ const DailyFrontPage: React.FC<Props> = ({ url, setColor, color }) => {
     <Box
       style={{
         backgroundColor: color,
+        background: `radial-gradient(circle at center, white, ${color})`,
+        color: 'black',
+        borderRadius: '20px',
+
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        minHeight: '80vh',
+        minHeight: '70vh',
       }}
     >
       {loaded ? (
@@ -58,7 +61,10 @@ const DailyFrontPage: React.FC<Props> = ({ url, setColor, color }) => {
           <Text
             size="xl"
             style={{
+              fontSize: 'calc(15px + 1vw)',
+
               textAlign: 'center',
+              fontWeight: 'bold',
             }}
             key={index}
           >
@@ -73,24 +79,25 @@ const DailyFrontPage: React.FC<Props> = ({ url, setColor, color }) => {
       )}
 
       <br></br>
-      <Flex
+      {/* <Flex
         style={{ height: '200px' }}
         justify="center"
         align="end"
+      > */}
+      <Button
+        style={{
+          position: 'fixed',
+          bottom: '10%',
+        }}
+        onClick={() => {
+          const haiku = makeHaiku(topWords);
+          setHaiku(haiku);
+          setColor(getColor(getSent(haiku.join(' '))));
+        }}
       >
-        <Button
-          style={{
-            position: 'absolute',
-          }}
-          onClick={() => {
-            const haiku = makeHaiku(topWords);
-            setHaiku(haiku);
-            setColor(getColor(getSent(haiku.join(' '))));
-          }}
-        >
-          Next
-        </Button>
-      </Flex>
+        Next
+      </Button>
+      {/* </Flex> */}
     </Box>
   );
 };
@@ -216,137 +223,3 @@ export { DailyFrontPage };
 //   const randomString = arr.splice(randomIndex, 1)[0];
 //   return randomString;
 // }
-
-///////////// stop words to not include //////////////
-const stopwords = [
-  ///// these are ones i added
-  '(oc)',
-  //   "i'm",
-  'i',
-  //   'me',
-  'my',
-  'myself',
-  'we',
-  'our',
-  'ours',
-  'ourselves',
-  'you',
-  'your',
-  'yours',
-  'yourself',
-  'yourselves',
-  'he',
-  'him',
-  'his',
-  'himself',
-  'she',
-  'her',
-  'hers',
-  'herself',
-  //   'it',
-  'its',
-  'itself',
-  'they',
-  'them',
-  'their',
-  'theirs',
-  'themselves',
-  'what',
-  'which',
-  'who',
-  'whom',
-  'this',
-  'that',
-  'these',
-  'those',
-  'am',
-  'is',
-  'are',
-  'was',
-  'were',
-  'be',
-  'been',
-  //   'being',
-  'have',
-  'has',
-  'had',
-  'having',
-  'do',
-  'does',
-  'did',
-  'doing',
-  'a',
-  'an',
-  'the',
-  //   'and',
-  'but',
-  'if',
-  'or',
-  'because',
-  'as',
-  'until',
-  'while',
-  'of',
-  'at',
-  'by',
-  'for',
-  'with',
-  'about',
-  'against',
-  'between',
-  'into',
-  'through',
-  'during',
-  'before',
-  'after',
-  'above',
-  'below',
-  'to',
-  'from',
-  'up',
-  'down',
-  'in',
-  'out',
-  'on',
-  'off',
-  'over',
-  'under',
-  'again',
-  'further',
-  'then',
-  'once',
-  'here',
-  'there',
-  'when',
-  'where',
-  'why',
-  'how',
-  'all',
-  'any',
-  'both',
-  'each',
-  'few',
-  'more',
-  'most',
-  'other',
-  'some',
-  'such',
-  'no',
-  'nor',
-  'not',
-  'only',
-  'own',
-  'same',
-  'so',
-  'than',
-  'too',
-  'very',
-  's',
-  't',
-  'can',
-  'will',
-  'just',
-  'don',
-  'should',
-  'now',
-];

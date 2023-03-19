@@ -36,3 +36,15 @@
     transform: rotate(360deg);
   }
 }
+
+@keyframes burst {
+  0% {
+    background-size: 0% 0%;
+  }
+  50% {
+    background-size: 100% 100%;
+  }
+  100% {
+    background-size: 0% 0%;
+  }
+}

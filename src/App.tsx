@@ -30,7 +30,6 @@ const MyAppShell = () => {
   const [content, setContent] = useState('pop');
   const [loaded, setLoaded] = useState(false);
   const [color, setColor] = useState('rgb(70,70,70)');
-  console.log({ color });
 
   // console.log({ content });
   return (
@@ -99,37 +98,23 @@ const MyAppShell = () => {
               <Flex
                 mih={50}
                 // bg="rgba(0, 0, 0, .3)"
-                gap="lg"
+                // gap="lg"
                 // justify="center"
-                align="center"
                 direction="row"
+                align="center"
+                justify="center"
                 wrap="nowrap"
               >
-                {/* <MediaQuery
-                  largerThan="sm"
-                  styles={{ display: 'none' }}
-                >
-                  <Burger
-                    opened={opened}
-                    onClick={() => setOpened((o) => !o)}
-                    size="sm"
-                    mr="xl"
-                  />
-                </MediaQuery> */}
                 <Text
                   fw={700}
                   style={{
-                    fontSize: 'calc(20px + 0.390625vw)',
+                    fontSize: 'calc(15px + 1vw)',
                     alignSelf: 'center',
                     justifySelf: 'center',
-                    marginLeft: 'auto',
                   }}
                 >
                   Collective Subconcious News
                 </Text>
-                <Box style={{ marginLeft: 'auto' }}>
-                  <ThemeSwitcher></ThemeSwitcher>
-                </Box>
               </Flex>
             </Header>
           }
@@ -148,6 +133,9 @@ const MyAppShell = () => {
                 setContent={setContent}
                 setLoaded={setLoaded}
               ></MyNav>{' '}
+              <Box style={{ marginLeft: 'auto' }}>
+                <ThemeSwitcher></ThemeSwitcher>
+              </Box>
             </Footer>
           }
         >
