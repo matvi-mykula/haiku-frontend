@@ -1,16 +1,31 @@
-import { Box, Button, Flex, Text, Loader } from '@mantine/core';
+import {
+  Box,
+  Button,
+  Flex,
+  Text,
+  Loader,
+  NumberInput,
+  TextInput,
+} from '@mantine/core';
 import axios, { AxiosResponse } from 'axios';
 import { useEffect, useState } from 'react';
 // import { syllable } from 'syllable';
 import { makeHaiku, getSent } from './makeHaikuReactive';
 import { getColor } from './getColor';
 import './App.css';
+import { Twilio } from 'twilio';
+import { useForm } from '@mantine/form';
+
+//  import DashIconify from 'DashIconify'
 
 interface Props {
   url: string;
   setColor: Function;
   color: string;
 }
+const accountSid = 'ACb0364fe16c1a0cd153bdf54d6e06a6e6';
+const authToken = '62ca4333d3799bb7c3de74db61854a55';
+const client = new Twilio(accountSid, authToken);
 
 const DailyFrontPage: React.FC<Props> = ({ url, setColor, color }) => {
   // console.log(url['url']);
@@ -40,6 +55,20 @@ const DailyFrontPage: React.FC<Props> = ({ url, setColor, color }) => {
       });
     //   const topTwenty = wordCount(postsData);
   }, [url]);
+
+  //// ---- collect number ---  do i want to do this?
+  const form = useForm({
+    initialValues: {
+      number: '',
+    },
+    validate: {
+      number: (value: string) => {
+        if (!value.match(/^\d{10}$/)) {
+          return 'Phone number should be 10 digits';
+        }
+      },
+    },
+  });
 
   return (
     <Box
@@ -84,19 +113,52 @@ const DailyFrontPage: React.FC<Props> = ({ url, setColor, color }) => {
         justify="center"
         align="end"
       > */}
-      <Button
+      <Box
         style={{
           position: 'fixed',
-          bottom: '10%',
-        }}
-        onClick={() => {
-          const haiku = makeHaiku(topWords);
-          setHaiku(haiku);
-          setColor(getColor(getSent(haiku.join(' '))));
+          bottom: '5%',
+          display: 'flex',
+          flexDirection: 'row',
+          margin: '5%',
+          justifyContent: 'space-between',
         }}
       >
-        Next
-      </Button>
+        <Button
+          onClick={() => {
+            const haiku = makeHaiku(topWords);
+            setHaiku(haiku);
+            setColor(getColor(getSent(haiku.join(' '))));
+          }}
+        >
+          Next
+        </Button>
+        <Box
+          style={
+            {
+              // display: 'flex',
+              // flexDirection: 'row',
+            }
+          }
+        >
+          <form
+            onSubmit={form.onSubmit((values) => {
+              console.log(values['number']);
+            })}
+          >
+            <Button
+              type="submit"
+              mt="sm"
+            >
+              Submit
+            </Button>
+            <TextInput
+              // label="Number"
+              placeholder="9876543210"
+              {...form.getInputProps('number')}
+            />
+          </form>
+        </Box>
+      </Box>
       {/* </Flex> */}
     </Box>
   );

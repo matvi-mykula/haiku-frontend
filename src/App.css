@@ -28,23 +28,7 @@
   color: #61dafb;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes burst {
-  0% {
-    background-size: 0% 0%;
-  }
-  50% {
-    background-size: 100% 100%;
-  }
-  100% {
-    background-size: 0% 0%;
-  }
+.buttonPressed {
+  background-color: '#000080';
+  box-shadow: 'inset 0px 0px 5px #888';
 }

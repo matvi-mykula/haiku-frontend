@@ -43,6 +43,10 @@ const MyAppShell = () => {
       >
         <AppShell
           styles={(theme) => ({
+            buttonPressed: {
+              backgroundColor: '#000080',
+              boxShadow: 'inset 0px 0px 5px #888',
+            },
             Button: (theme: {
               colorScheme: string;
               colors: { dark: any[]; gray: any[] };
@@ -132,6 +136,7 @@ const MyAppShell = () => {
               <MyNav
                 setContent={setContent}
                 setLoaded={setLoaded}
+                content={content}
               ></MyNav>{' '}
               <Box style={{ marginLeft: 'auto' }}>
                 <ThemeSwitcher></ThemeSwitcher>
