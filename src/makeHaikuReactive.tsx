@@ -10,7 +10,8 @@
 //   downvotes: number,
 //   date: Date,
 //   url: url,
-//    sentiment:number
+//    sentiment:number,
+// sentTo:number[]
 
 // }
 

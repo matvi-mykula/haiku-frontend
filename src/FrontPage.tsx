@@ -13,7 +13,7 @@ import { useEffect, useState } from 'react';
 import { makeHaiku, getSent } from './makeHaikuReactive';
 import { getColor } from './getColor';
 import './App.css';
-import { Twilio } from 'twilio';
+// import { Twilio } from 'twilio';
 import { useForm } from '@mantine/form';
 
 //  import DashIconify from 'DashIconify'
@@ -23,14 +23,8 @@ interface Props {
   setColor: Function;
   color: string;
 }
-const accountSid = 'ACb0364fe16c1a0cd153bdf54d6e06a6e6';
-const authToken = '62ca4333d3799bb7c3de74db61854a55';
-const client = new Twilio(accountSid, authToken);
 
 const DailyFrontPage: React.FC<Props> = ({ url, setColor, color }) => {
-  // console.log(url['url']);
-  // const url = 'https://reddit.com/';
-
   const [haiku, setHaiku] = useState(['']);
   const [topWords, setTopWords] = useState(['']);
   const [loaded, setLoaded] = useState(false);
@@ -56,7 +50,7 @@ const DailyFrontPage: React.FC<Props> = ({ url, setColor, color }) => {
     //   const topTwenty = wordCount(postsData);
   }, [url]);
 
-  //// ---- collect number ---  do i want to do this?
+  //// ---- collect number ---  do i want to do this? /// could be open to abuse...
   const form = useForm({
     initialValues: {
       number: '',
@@ -69,6 +63,17 @@ const DailyFrontPage: React.FC<Props> = ({ url, setColor, color }) => {
       },
     },
   });
+
+  const postMessageToPhone = (number: string, msg: string) => {
+    axios
+      .post('http://localhost:8080/sendMessage', {
+        number: number,
+        msg: msg,
+      })
+      .then((response) => {
+        console.log('message should be sent');
+      });
+  };
 
   return (
     <Box
@@ -143,6 +148,8 @@ const DailyFrontPage: React.FC<Props> = ({ url, setColor, color }) => {
           <form
             onSubmit={form.onSubmit((values) => {
               console.log(values['number']);
+              postMessageToPhone(form.values.number, haiku.join('\n'));
+              // sendMessage(haiku);
             })}
           >
             <Button
